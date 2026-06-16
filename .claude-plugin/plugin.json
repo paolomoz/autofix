@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "autofix",
+  "description": "Audit a target for quality findings and remediate them — a validator dispatcher (audit) plus a platform-agnostic remediation engine (autofix).",
+  "version": "0.1.0",
+  "author": {
+    "name": "paolomoz"
+  },
+  "homepage": "https://github.com/paolomoz/autofix",
+  "repository": "https://github.com/paolomoz/autofix",
+  "license": "MIT",
+  "keywords": [
+    "audit",
+    "remediation",
+    "design",
+    "accessibility",
+    "seo",
+    "eds"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "autofix-marketplace",
+  "owner": {
+    "name": "paolomoz",
+    "email": "paolo.moz@gmail.com"
+  },
+  "description": "Marketplace for the autofix plugin: audit a target for quality findings and remediate them.",
+  "plugins": [
+    {
+      "name": "autofix",
+      "source": "./",
+      "description": "Audit a target for quality findings and remediate them.",
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# Generated audit output (see skills/audit)
+.audit/
+
+# Tooling caches
+.impeccable/
