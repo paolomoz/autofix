@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "autofix": {
+      "command": "node",
+      "args": ["mcp/src/server.ts"],
+      "env": {
+        "AUTOFIX_AGENT": "cli",
+        "AUTOFIX_MODEL": "claude-opus-4-8"
+      }
+    }
+  }
+}
