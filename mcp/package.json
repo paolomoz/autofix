@@ -1,0 +1,29 @@
+{
+  "name": "@autofix/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server exposing autofix's scan + apply skills as callable tools",
+  "type": "module",
+  "bin": {
+    "autofix-mcp": "./src/server.ts"
+  },
+  "scripts": {
+    "start": "node src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'test/*.test.ts'"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^4.0.0"
+  },
+  "optionalDependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
