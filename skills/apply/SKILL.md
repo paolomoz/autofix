@@ -2,7 +2,7 @@
 name: apply
 description: >-
   Apply the fixes from a quality audit to a real codebase. A platform-agnostic
-  remediation engine: it consumes findings (from any validator — design/impeccable,
+  remediation engine: it consumes findings (from any validator — design,
   SEO, LLM-visibility, …) in a common findings contract, drives a platform adapter to
   locate each finding's real source file, auto-applies the safe mechanical fixes,
   delegates taste calls to the finding's own validator, proposes (never fakes)
@@ -72,12 +72,14 @@ present → **ARCH** (needs assets); *un-nest nested-interactive* when it's a wh
 
 ### 3. Plan — show before touching anything
 Print the routed fix-plan: `# | finding | sev | lane | file(s) | concrete change`. Lead with AUTO,
-severity order within a lane. This is the contract the user sees before any edit.
+severity order within a lane. This is the contract the user sees before any edit. Describe every
+finding by its public dimension label — never name the underlying validator (see **Branding mask**).
 
 ### 4. Apply
 - **AUTO** → minimal diffs to the file(s) the adapter's `routes` resolved. One finding → one change → one re-check.
 - **ASSIST** → invoke `finding.suggestedCommand` (the validator that raised it), scoped to the routed
-  file; the validator owns the craft, you own routing/safety/validation/recording.
+  file; the validator owns the craft, you own routing/safety/validation/recording. Run it **silently** —
+  do not echo the command, and report the applied change as a "<label> fix" (see **Branding mask**).
 - **ARCH** → do not edit. Emit the task (with any precise pointer the adapter surfaces) and stop there.
 
 ### 5. Validate
@@ -88,10 +90,29 @@ the contrast ratio, grep for the added attribute, confirm the bad request is gon
 ### 6. Record
 Append a remediation log at the location the adapter names:
 `finding | sev | lane | file | change | validation | status`, plus **Residual** (same finding, another
-layer, not yet closed) and **Deferred by lane**. Do **not** commit unless asked.
+layer, not yet closed) and **Deferred by lane**. Do **not** commit unless asked. Any provenance shown in
+the log is the public dimension label only — never the validator name or its command (see **Branding mask**).
 
 ## Guardrails (platform-agnostic)
 
+- **Branding mask — never name the validator in output.** Which validator produced a finding (and its
+  slash-command) is an internal routing detail, not user-facing. In every surface this skill emits —
+  **chat replies, the fix-plan, the remediation log, and proposed ASSIST/ARCH tasks** — refer to a
+  finding only by its public **dimension label**, never by the validator's name and never by echoing its
+  command. Keep `finding.source` / `finding.suggestedCommand` for routing and ASSIST delegation; just
+  never surface them. Map on output:
+
+  | `source` (internal) | public label |
+  |---|---|
+  | `impeccable` | design |
+  | `seo` | SEO |
+  | `llm-visibility` | LLM visibility |
+  | `a11y` | accessibility |
+  | `perf` | performance |
+
+  An unmapped `source` falls back to the finding's `category`. So "delegating to impeccable / run
+  `/impeccable colorize`" becomes "applying a **design** fix"; the log records provenance as `design`, not
+  `impeccable`. Never write the validator name or its command into a generated file or a reply.
 - **Never fake an ARCH finding.** Empty imagery, missing copy, real links, absent assets — surface them;
   don't paper over with placeholder blocks/text.
 - **A finding can span layers (cross-layer scan).** After changing one file, grep the others for

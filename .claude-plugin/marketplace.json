@@ -10,7 +10,7 @@
       "name": "autofix",
       "source": "./",
       "description": "Audit a target for quality findings and remediate them.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }
