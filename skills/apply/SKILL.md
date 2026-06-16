@@ -1,5 +1,5 @@
 ---
-name: autofix
+name: apply
 description: >-
   Apply the fixes from a quality audit to a real codebase. A platform-agnostic
   remediation engine: it consumes findings (from any validator — design/impeccable,
@@ -12,15 +12,15 @@ description: >-
   matching platform adapter; today only `adapters/snowflake-overlay.md` exists.
 ---
 
-# autofix
+# apply
 
 The **consumer** half of an audit→fix pipeline. Validators (the brains — impeccable for
-design, plus future SEO / LLM-visibility skills) *produce* findings; autofix *applies* them.
+design, plus future SEO / LLM-visibility skills) *produce* findings; `apply` *applies* them.
 It owns triage, the apply/validate/record loop, and the safety guardrails — and it knows
 nothing platform-specific. All "where does this finding's code live / how do I validate it"
 knowledge is supplied by a **platform adapter**.
 
-"Autofix" means: the **AUTO** lane is applied automatically. **ASSIST** is delegated back to the
+Running `apply` means: the **AUTO** lane is applied automatically. **ASSIST** is delegated back to the
 finding's validator. **ARCH** is proposed, never silently changed.
 
 ## Two inputs, two contracts
@@ -32,7 +32,7 @@ finding's validator. **ARCH** is proposed, never silently changed.
    `detect / locate / routes / constraints / validate`. Pick by detecting the platform; today the only
    one is **[snowflake-overlay](adapters/snowflake-overlay.md)**.
 
-If no adapter matches the repo → stop and say so (autofix can't route without one).
+If no adapter matches the repo → stop and say so (`apply` can't route without one).
 
 ## What it is not
 - **Not a validator/auditor** — it consumes findings, never generates them.

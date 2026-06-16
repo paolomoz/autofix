@@ -6,8 +6,8 @@ A Claude Code **plugin** (and single-plugin **marketplace**) for auditing a targ
 
 | Skill | Command | What it does |
 |---|---|---|
-| `audit` | `/autofix:scan <target>` | Dispatcher that runs quality validators (design/impeccable today; SEO + LLM-visibility planned) and emits findings in the shared findings contract. Does **not** apply fixes. |
-| `autofix` | `/autofix:apply <findings>` | Platform-agnostic remediation engine that consumes the findings contract, locates each finding's source file via a platform adapter, auto-applies safe fixes, delegates taste calls, and proposes architecture/content changes. |
+| `scan` | `/autofix:scan <target>` | Dispatcher that runs quality validators (design/impeccable today; SEO + LLM-visibility planned) and emits findings in the shared findings contract. Does **not** apply fixes. |
+| `apply` | `/autofix:apply <findings>` | Platform-agnostic remediation engine that consumes the findings contract, locates each finding's source file via a platform adapter, auto-applies safe fixes, delegates taste calls, and proposes architecture/content changes. |
 
 The two are designed to pair: `audit` produces findings → `autofix` applies them.
 
@@ -27,13 +27,13 @@ Then invoke either skill directly, or via its command: `/autofix:scan <target>` 
   plugin.json          # plugin manifest (name: autofix)
   marketplace.json     # marketplace manifest (name: autofix-marketplace, source ./)
 commands/
-  scan.md              # /autofix:scan  → invokes the audit skill
-  apply.md             # /autofix:apply → invokes the autofix skill
+  scan.md              # /autofix:scan  → invokes the scan skill
+  apply.md             # /autofix:apply → invokes the apply skill
 skills/
-  audit/SKILL.md
-  autofix/SKILL.md
-  autofix/contracts/   # findings + adapter contracts
-  autofix/adapters/    # platform adapters (snowflake-overlay today)
+  scan/SKILL.md
+  apply/SKILL.md
+  apply/contracts/     # findings + adapter contracts
+  apply/adapters/      # platform adapters (snowflake-overlay today)
 ```
 
 Skills sourced from the `skill-1` branch of `claude-design-eds`.

@@ -39,8 +39,8 @@ everything else is pluggable.
 
 ## Deferred (YAGNI until needed)
 - Adapters for `canonical-eds`, `universal-editor`, `generic-web`.
-- The `audit` dispatcher skill over the validators.
+- The `scan` dispatcher skill over the validators.
 - A `seo` / `llm-visibility` validator emitting the findings contract.
-- Promote from this repo's project skill to `~/.claude/skills/autofix/` for global invocation, and have
+- Promote from this repo's project skill to `~/.claude/skills/apply/` for global invocation, and have
   snowflake publish its adapter facts in its substrate manifest so the adapter reads rather than encodes.
 - Optional: `/impeccable audit --json` emitting the findings contract directly (kills markdown parsing).
