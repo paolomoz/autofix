@@ -6,8 +6,8 @@ A Claude Code **plugin** (and single-plugin **marketplace**) for auditing a targ
 
 | Skill | Command | What it does |
 |---|---|---|
-| `audit` | `/autofix:audit <target>` | Dispatcher that runs quality validators (design/impeccable today; SEO + LLM-visibility planned) and emits findings in the shared findings contract. Does **not** apply fixes. |
-| `autofix` | `/autofix:autofix <findings>` | Platform-agnostic remediation engine that consumes the findings contract, locates each finding's source file via a platform adapter, auto-applies safe fixes, delegates taste calls, and proposes architecture/content changes. |
+| `audit` | `/autofix:scan <target>` | Dispatcher that runs quality validators (design/impeccable today; SEO + LLM-visibility planned) and emits findings in the shared findings contract. Does **not** apply fixes. |
+| `autofix` | `/autofix:apply <findings>` | Platform-agnostic remediation engine that consumes the findings contract, locates each finding's source file via a platform adapter, auto-applies safe fixes, delegates taste calls, and proposes architecture/content changes. |
 
 The two are designed to pair: `audit` produces findings → `autofix` applies them.
 
@@ -18,7 +18,7 @@ The two are designed to pair: `audit` produces findings → `autofix` applies th
 /plugin install autofix@autofix-marketplace
 ```
 
-Then invoke either skill directly, or via its command: `/autofix:audit <target>` and `/autofix:autofix <findings.json | page>`.
+Then invoke either skill directly, or via its command: `/autofix:scan <target>` and `/autofix:apply <findings.json | page>`.
 
 ## Layout
 
@@ -27,8 +27,8 @@ Then invoke either skill directly, or via its command: `/autofix:audit <target>`
   plugin.json          # plugin manifest (name: autofix)
   marketplace.json     # marketplace manifest (name: autofix-marketplace, source ./)
 commands/
-  audit.md             # /autofix:audit  → invokes the audit skill
-  autofix.md           # /autofix:autofix → invokes the autofix skill
+  scan.md              # /autofix:scan  → invokes the audit skill
+  apply.md             # /autofix:apply → invokes the autofix skill
 skills/
   audit/SKILL.md
   autofix/SKILL.md
