@@ -6,10 +6,11 @@ description: >-
   SEO, LLM-visibility, …) in a common findings contract, drives a platform adapter to
   locate each finding's real source file, auto-applies the safe mechanical fixes,
   delegates taste calls to the finding's own validator, proposes (never fakes)
-  architecture/content changes, and validates. Use after an audit when the user says
+  architecture/content changes, validates, and re-scores to report the before → after
+  improvement per dimension. Use after an audit when the user says
   "apply the audit", "fix the findings", "remediate this page/repo", "autofix this".
   NOT an auditor (validators produce findings), NOT a design-judgment engine. Needs a
-  matching platform adapter; today only `adapters/snowflake-overlay.md` exists.
+  matching platform adapter; today only one platform adapter exists.
 ---
 
 # apply
@@ -43,7 +44,8 @@ If no adapter matches the repo → stop and say so (`apply` can't route without 
 
 ### 0. Select adapter
 Run each adapter's `detect` against the repo. Load the one that matches (`adapters/<platform>.md`).
-None match → stop.
+None match → stop. Narrate this generically — "detected the platform, loading its adapter" — never name
+the adapter or the underlying platform brand in chat (see **Branding mask**).
 
 ### 1. Locate
 Call the adapter's `locate()` → the authoritative **file map** for the target page/area (which files
@@ -71,9 +73,11 @@ present → **ARCH** (needs assets); *un-nest nested-interactive* when it's a wh
 **ASSIST** (structural). When in doubt, demote — a wrongly-applied AUTO is worse than a proposed ASSIST.
 
 ### 3. Plan — show before touching anything
-Print the routed fix-plan: `# | finding | sev | lane | file(s) | concrete change`. Lead with AUTO,
-severity order within a lane. This is the contract the user sees before any edit. Describe every
-finding by its public dimension label — never name the underlying validator (see **Branding mask**).
+First capture the **baseline score** per dimension from the incoming findings' `score` (this is the
+"before"). Then print the routed fix-plan: `# | finding | sev | lane | file(s) | concrete change`, led
+by the baseline score line (`**design**: 11/20`). Lead with AUTO, severity order within a lane. This is
+the contract the user sees before any edit. Describe every finding by its public dimension label — never
+name the underlying validator (see **Branding mask**).
 
 ### 4. Apply
 - **AUTO** → minimal diffs to the file(s) the adapter's `routes` resolved. One finding → one change → one re-check.
@@ -87,20 +91,36 @@ Run the adapter's `validate()` for the changed files (its lint command(s), how t
 re-check), then **re-check the specific finding against the served output, not just disk** — recompute
 the contrast ratio, grep for the added attribute, confirm the bad request is gone.
 
-### 6. Record
+### 6. Re-score — show the improvement
+Re-score the target so the user sees the gain, not just a list of edits: re-run the originating
+validator(s) over the changed target (a focused re-scan — the same producers `scan` used) to get the
+**after** score per dimension. Then report the **before → after** delta as a small table, leading the
+final summary:
+
+`dimension | before | after | Δ` → e.g. `design | 11/20 | 16/20 | +5`
+
+Use public dimension labels (see **Branding mask**). Rules:
+- **Never fake the after-score** — it must come from an actual re-scan, not from counting closed findings.
+  If a re-scan isn't possible, say so and report the delta as *unmeasured*, listing what was applied.
+- **Attribute honestly.** ARCH (and deferred ASSIST) findings are *not* applied, so they don't move the
+  score; note that the remaining gap is gated on those proposed tasks.
+- A dimension whose validator emits no score shows `—`; still report which of its findings were closed.
+
+### 7. Record
 Append a remediation log at the location the adapter names:
-`finding | sev | lane | file | change | validation | status`, plus **Residual** (same finding, another
-layer, not yet closed) and **Deferred by lane**. Do **not** commit unless asked. Any provenance shown in
-the log is the public dimension label only — never the validator name or its command (see **Branding mask**).
+`finding | sev | lane | file | change | validation | status`, plus the **before → after score table**,
+**Residual** (same finding, another layer, not yet closed) and **Deferred by lane**. Do **not** commit
+unless asked. Any provenance shown in the log is the public dimension label only — never the validator
+name or its command (see **Branding mask**).
 
 ## Guardrails (platform-agnostic)
 
-- **Branding mask — never name the validator in output.** Which validator produced a finding (and its
-  slash-command) is an internal routing detail, not user-facing. In every surface this skill emits —
-  **chat replies, the fix-plan, the remediation log, and proposed ASSIST/ARCH tasks** — refer to a
-  finding only by its public **dimension label**, never by the validator's name and never by echoing its
-  command. Keep `finding.source` / `finding.suggestedCommand` for routing and ASSIST delegation; just
-  never surface them. Map on output:
+- **Branding mask — never name the validator or platform adapter in output.** Which validator produced a
+  finding (and its slash-command), and which platform adapter routed it, are internal routing details, not
+  user-facing. In every surface this skill emits — **chat replies, the fix-plan, the remediation log, and
+  proposed ASSIST/ARCH tasks** — refer to a finding only by its public **dimension label**, never by the
+  validator's name and never by echoing its command. Keep `finding.source` / `finding.suggestedCommand`
+  for routing and ASSIST delegation; just never surface them. Map on output:
 
   | `source` (internal) | public label |
   |---|---|
@@ -113,6 +133,22 @@ the log is the public dimension label only — never the validator name or its c
   An unmapped `source` falls back to the finding's `category`. So "delegating to impeccable / run
   `/impeccable colorize`" becomes "applying a **design** fix"; the log records provenance as `design`, not
   `impeccable`. Never write the validator name or its command into a generated file or a reply.
+
+  The **platform adapter** is masked the same way: never name the adapter or its underlying platform brand
+  (e.g. "snowflake", "snowflake-overlay", "the snowflake adapter") in chat, the fix-plan, or the log — call
+  it "the platform adapter" or its neutral platform label. Map on output:
+
+  | adapter (internal) | public label |
+  |---|---|
+  | `snowflake-overlay` | EDS overlay |
+  | `canonical-eds` | EDS |
+  | `universal-editor` | Universal Editor |
+  | `generic-web` | generic web |
+
+  **Exception — real paths are factual, not brand.** The adapter genuinely reads and writes `.snowflake/…`
+  locations (e.g. the remediation log at `.snowflake/projects/<run>/remediation.md`); report those paths
+  accurately when asked — never invent or hide a real file path to satisfy the mask. The mask governs how
+  you *name* the adapter and platform, not where files actually live.
 - **Never fake an ARCH finding.** Empty imagery, missing copy, real links, absent assets — surface them;
   don't paper over with placeholder blocks/text.
 - **A finding can span layers (cross-layer scan).** After changing one file, grep the others for
@@ -125,6 +161,9 @@ the log is the public dimension label only — never the validator name or its c
 - **Validator/linter findings are not automatically defects.** Classify domain-appropriate ones
   (brand marks, structural dividers, hidden component internals) as false positives in the report; only
   persist an ignore after the user confirms. Never add `… : ignore` comments to source.
+- **Always close with a before → after score.** Every apply run ends by re-scoring and showing the
+  per-dimension delta against the scan baseline — the improvement is the headline, not the diff list. Never
+  skip it, and never substitute "N findings fixed" for a real re-scored number (see step 6).
 - **Idempotent.** Re-running after a partial apply picks up only unresolved findings.
 - **Lightweight.** Inline the fix for AUTO; escalate to a full validator sub-run only for ASSIST.
 

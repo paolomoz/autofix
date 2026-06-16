@@ -10,7 +10,7 @@ new producer of this same object — it touches nothing in autofix or any adapte
 {
   "page": "test-2",                    // page slug / route / file the audit targeted
   "source": "impeccable",              // which validator produced this: impeccable | seo | llm-visibility | a11y | perf | …
-  "score": { "value": 11, "max": 20 }, // optional, validator-defined
+  "score": { "value": 11, "max": 20 }, // validator-defined quality score — ALWAYS emitted; the baseline apply compares its after-score against
   "findings": [
     {
       "id": "contrast-kicker",         // stable id (idempotency key for re-runs)
@@ -36,6 +36,9 @@ new producer of this same object — it touches nothing in autofix or any adapte
 - **`suggestedCommand`** is advisory. If absent, autofix infers the ASSIST target from `source` +
   `category`, or asks.
 - **`id`** must be stable across runs so re-running autofix skips already-closed findings.
+- **`score`** is **always emitted** (per source). It's the unit of the user-visible improvement: scan
+  reports it as the baseline, and after applying, autofix re-scores and reports the **before → after**
+  delta per dimension. A validator with no native score reports `null` (shown as `—`), never a faked number.
 
 ## Adapters to this contract
 

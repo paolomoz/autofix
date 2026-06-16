@@ -77,7 +77,10 @@ Combine into a union `{ page, findings[] }` across validators. Write:
 - `.audit/<page>/findings.json` — the merged union apply consumes (its `source` / `suggestedCommand`
   fields are kept internal for routing, never displayed).
 
-(`.audit/` is generated output — gitignore it.) Print the merged findings as a table:
+(`.audit/` is generated output — gitignore it.) **Always lead with the score**: print a one-line score
+summary per dimension before the table — `**design**: 11/20` (public label, from each source's `score`;
+`—` if a validator emits none). This score is the baseline the user will see improve after `apply`.
+Then print the merged findings as a table:
 `# | source | sev | category | location | recommendation` — the `source` column shows the public label,
 never the validator name.
 
@@ -92,7 +95,7 @@ From the audit's **"Detailed Findings by Severity"** block:
 - `Category:` → `category` (accessibility | performance | theming | responsive | anti-pattern)
 - `Recommendation:` → `recommendation`
 - `Suggested command:` → `suggestedCommand`
-- `source: "impeccable"`; the health-score table → top-level `score`.
+- `source: "impeccable"`; the health-score table → `score` (always capture it — it's the baseline for `apply`'s before/after).
 
 ## Non-goals
 - **No quality judgment of its own.** "Is this good?" is the validator's call, not the dispatcher's.
